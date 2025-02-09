@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen Click - Stress Reliever</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <nav class="nav-menu">
+        <button class="menu-btn">☰</button>
+        <div class="menu-content">
+            <div id="menu-items"></div>
+        </div>
+    </nav>
+
+    <div class="click-container">
+        <div class="count-display" id="count">0</div>
+        <button class="zen-button" id="clickBtn">CLICK FOR ZEN</button>
+    </div>
+
+    <div class="auth-modal" id="authModal">
+        <div class="auth-content">
+            <h2>🌟 Join Zen Click</h2>
+            <input type="text" class="auth-input" id="username" placeholder="Username">
+            <input type="password" class="auth-input" id="password" placeholder="Password">
+            <button class="auth-button" id="authAction">Continue</button>
+            <button class="auth-button secondary" onclick="closeAuthModal()">Later</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

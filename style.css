@@ -1,0 +1,112 @@
+:root {
+    --primary: #6C63FF;
+    --secondary: #FF6584;
+    --background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    --text: #2d3436;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--background);
+    font-family: 'Rubik', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text);
+}
+
+.nav-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--primary);
+}
+
+.menu-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    padding: 1rem;
+    min-width: 200px;
+}
+
+.click-container {
+    text-align: center;
+    margin-top: 15vh;
+}
+
+.zen-button {
+    padding: 40px 80px;
+    font-size: 2.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 15px 30px rgba(108, 99, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.count-display {
+    font-size: 5rem;
+    margin: 2rem 0;
+    font-weight: 600;
+}
+
+.auth-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    z-index: 1001;
+    display: none;
+    max-width: 400px;
+    width: 90%;
+}
+
+.auth-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.auth-input {
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.auth-button {
+    background: var(--primary);
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.auth-button.secondary {
+    background: var(--secondary);
+}
