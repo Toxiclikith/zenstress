@@ -58,12 +58,16 @@ async function handleAuth() {
     const password = document.getElementById('password').value;
 
     const response = await fetch(`${CLOUDFLARE_API}auth`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: userIdInput, password, count })
-    });
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: userIdInput, password, count })
+});
 
-    const data = await response.json();
+const data = await response.json().catch(() => null); // Catch JSON parse errors
+
+console.log("Auth API response status:", response.status);
+console.log("Auth API response data:", data);
+
     
     if(data.success) {
         userId = userIdInput;
