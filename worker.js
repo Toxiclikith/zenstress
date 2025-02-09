@@ -18,8 +18,7 @@ export default {
         }
 
         // Routes
-        if (path === '/signup') return handleSignup(request, USERS, headers);
-        if (path === '/login') return handleLogin(request, USERS, headers);
+        if (path === '/auth') return handleAuth(request, USERS, headers);
         if (path === '/data') return handleData(request, USERS, headers);
         if (path === '/update') return handleUpdate(request, USERS, headers);
 
@@ -27,40 +26,30 @@ export default {
     }
 };
 
-// Signup Handler
-async function handleSignup(request, users, headers) {
-    const { userId, password } = await request.json();
-    const userKey = `user:${userId}`;
+async function handleAuth(request, users, headers) {
+    const { userId, password, count } = await request.json();
     
+    const userKey = `user:${userId}`;
     const existingUser = await users.get(userKey);
+    
     if (existingUser) {
-        return errorResponse('User already exists', headers);
+        const userData = JSON.parse(existingUser);
+        if (userData.password === password) {
+            return successResponse({ message: 'Login successful' }, headers);
+        }
+        return errorResponse('Invalid credentials', headers);
     }
-
-    // Create new user
-    await users.put(userKey, JSON.stringify({ password, count: 0, createdAt: Date.now() }));
+    
+    // New user
+    await users.put(userKey, JSON.stringify({
+        password,
+        count: count || 0,
+        createdAt: Date.now()
+    }));
+    
     return successResponse({ message: 'Signup successful' }, headers);
 }
 
-// Login Handler
-async function handleLogin(request, users, headers) {
-    const { userId, password } = await request.json();
-    const userKey = `user:${userId}`;
-
-    const userData = await users.get(userKey);
-    if (!userData) {
-        return errorResponse('User not found', headers);
-    }
-
-    const user = JSON.parse(userData);
-    if (user.password !== password) {
-        return errorResponse('Invalid password', headers);
-    }
-
-    return successResponse({ message: 'Login successful' }, headers);
-}
-
-// Fetch User Data
 async function handleData(request, users, headers) {
     const { userId } = await request.json();
     const userKey = `user:${userId}`;
@@ -74,7 +63,6 @@ async function handleData(request, users, headers) {
     return successResponse({ count: user.count }, headers);
 }
 
-// Update Count
 async function handleUpdate(request, users, headers) {
     const { userId, count } = await request.json();
     const userKey = `user:${userId}`;
@@ -85,13 +73,12 @@ async function handleUpdate(request, users, headers) {
     }
 
     const user = JSON.parse(userData);
-    user.count = count;
+    user.count = parseInt(count);
 
     await users.put(userKey, JSON.stringify(user));
     return successResponse({ message: 'Count updated successfully' }, headers);
 }
 
-// Success and Error Response
 function successResponse(data, headers) {
     return new Response(JSON.stringify({ success: true, ...data }), { headers });
 }
