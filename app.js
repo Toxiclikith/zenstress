@@ -1,80 +1,96 @@
-// Cloudflare API URL
 const CLOUDFLARE_API = 'https://zen-stress.toxiclikith.workers.dev/';
 let count = 0;
-let user = JSON.parse(localStorage.getItem('user')) || null;
+let userId = localStorage.getItem('userId') || null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.menu-btn').addEventListener('click', toggleMenu);
     document.getElementById('clickBtn').addEventListener('click', handleClick);
     document.getElementById('authAction').addEventListener('click', handleAuth);
     updateMenu();
 });
 
-// Update UI Menu
-function updateMenu() {
-    document.getElementById('menu-items').innerHTML = user ?
-        `<div class="menu-item">👤 ${user.username}</div>
-         <div class="menu-item" onclick="logout()">🚪 Logout</div>` :
-        `<div class="menu-item" onclick="showAuthModal()">📝 Sign Up / Login</div>`;
+// Menu Management
+function toggleMenu() {
+    const menu = document.querySelector('.menu-content');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    updateMenu();
 }
 
-// Handle Click Event
+function updateMenu() {
+    const menuItems = document.getElementById('menu-items');
+    menuItems.innerHTML = userId ? `
+        <div class="menu-item">👤 ${userId}</div>
+        <div class="menu-item">🏆 Achievements</div>
+        <div class="menu-item" onclick="logout()">🚪 Logout</div>
+    ` : `
+        <div class="menu-item" onclick="showAuthModal()">📝 Sign Up</div>
+        <div class="menu-item" onclick="showAuthModal()">🔑 Login</div>
+    `;
+}
+
+// Click Handler
 async function handleClick() {
     count++;
     document.getElementById('count').textContent = count;
+    navigator.vibrate?.(50);
+    
+    if(count % 100 === 0) {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }
 
-    if (user) {
-        await fetch(`${CLOUDFLARE_API}/update`, {
+    if(userId) {
+        await fetch(`${CLOUDFLARE_API}update`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: user.username, count })
+            body: JSON.stringify({ userId, count })
         });
+    }
+
+    if(!userId && (count === 100 || count % 500 === 0)) {
+        showAuthModal();
     }
 }
 
-// Handle Signup/Login
+// Auth Functions
 async function handleAuth() {
-    const username = document.getElementById('username').value;
+    const userIdInput = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    const response = await fetch(`${CLOUDFLARE_API}/auth`, {
+    const response = await fetch(`${CLOUDFLARE_API}auth`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, count })
+        body: JSON.stringify({ userId: userIdInput, password, count })
     });
 
     const data = await response.json();
-    if (data.success) {
-        user = { username };
-        localStorage.setItem('user', JSON.stringify(user));
+    
+    if(data.success) {
+        userId = userIdInput;
+        localStorage.setItem('userId', userId);
         updateMenu();
         closeAuthModal();
         loadUserData();
     }
 }
 
-// Load User Data
 async function loadUserData() {
-    if (!user) return;
-    const response = await fetch(`${CLOUDFLARE_API}/data`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: user.username })
-    });
+    const response = await fetch(`${CLOUDFLARE_API}data?userId=${userId}`);
     const data = await response.json();
-    if (data.success) {
-        count = data.count;
-        document.getElementById('count').textContent = count;
-    }
+    count = data.count;
+    document.getElementById('count').textContent = count;
 }
 
-// Logout Function
 function logout() {
-    localStorage.removeItem('user');
-    user = null;
+    localStorage.removeItem('userId');
+    userId = null;
     updateMenu();
 }
 
-// Show/Hide Authentication Modal
-function showAuthModal() { document.getElementById('authModal').style.display = 'block'; }
-function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+function showAuthModal() {
+    document.getElementById('authModal').style.display = 'block';
+}
+
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+}
